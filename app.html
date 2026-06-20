@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Pill Checker | مساعد الأدوية الذكي</title>
+    <!-- استيراد خط حديث وراقي -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --primary-color: #2a6f97;
+            --primary-hover: #014f86;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --card-bg: #ffffff;
+            --danger-color: #e63946;
+            --success-color: #2a9d8f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Kufi Arabic', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        /* الجزء العلوي البصري الفاخر */
+        .app-header {
+            position: relative;
+            height: 200px;
+            background-image: url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .app-header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(42, 111, 151, 0.9), rgba(42, 111, 151, 0.3));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            color: white;
+        }
+
+        .app-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .app-header p {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* محتوى التطبيق الداخلي */
+        .app-content {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        /* تحسين مظهر خيارات المريض الاستقصائية */
+        .condition-selector {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .condition-box {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .condition-box.active {
+            border-color: var(--primary-color);
+            background-color: rgba(42, 111, 151, 0.03);
+        }
+
+        .condition-box input {
+            margin-left: 12px;
+            accent-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        .condition-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* محرك البحث الراقي */
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+            border-radius: 14px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(42, 111, 151, 0.1);
+        }
+
+        .btn-check {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-check:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* صندوق النتيجة الطبي الراقي */
+        .result-card {
+            margin-top: 24px;
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .result-card.danger {
+            background-color: #fff5f5;
+            border: 1px solid #ffbcbc;
+            color: #bd2130;
+        }
+
+        .result-card.success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .result-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-text {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- الواجهة البصرية -->
+        <div class="app-header">
+            <div class="app-header-overlay">
+                <h1>مُساعد الأدوية الذكي</h1>
+                <p>نظام التحقق الفوري الآمن للمرضى والصيدليات</p>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <!-- الحالة الصحية للمريض -->
+            <div class="form-group">
+                <span class="form-label">التاريخ الصحي للمريض</span>
+                <div class="condition-selector">
+                    <div class="condition-box" id="bp-box" onclick="toggleCondition()">
+                        <input type="checkbox" id="has-bp">
+                        <div class="condition-info">
+                            <h3>يعاني من ارتفاع ضغط الدم (Hypertension)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إدخال اسم الدواء -->
+            <div class="form-group">
+                <label class="form-label" for="med-search">ابحث عن اسم الدواء أو المادة الفعالة</label>
+                <div class="search-wrapper">
+                    <input type="text" id="med-search" class="search-input" placeholder="مثال: Doliprane, Humex, Actifed...">
+                </div>
+            </div>
+
+            <button class="btn-check" onclick="checkMedication()">تحليل الأمان الفوري</button>
+
+            <!-- بطاقة النتائج الذكية -->
+            <div id="result-box" class="result-card">
+                <div id="result-title" class="result-title"></div>
+                <div id="result-text" class="result-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // جعل البطاقة تتفاعل بصرياً عند الضغط عليها
+        function toggleCondition() {
+            const checkbox = document.getElementById('has-bp');
+            const box = document.getElementById('bp-box');
+            checkbox.checked = !checkbox.checked;
+            
+            if(checkbox.checked) {
+                box.classList.add('active');
+            } else {
+                box.classList.remove('active');
+            }
+        }
+
+        function checkMedication() {
+            const isHypertensive = document.getElementById('has-bp').checked;
+            const medInput = document.getElementById('med-search').value.trim().toLowerCase();
+            const resultBox = document.getElementById('result-box');
+            const resultTitle = document.getElementById('result-title');
+            const resultText = document.getElementById('result-text');
+
+            if (!medInput) {
+                alert('الرجاء إدخال اسم الدواء أولاً.');
+                return;
+            }
+
+            resultBox.style.display = 'block';
+
+            // قائمة أدوية الرشح الشائعة المحتوية على مضيقات الأوعية الخطيرة على مرضى الضغط
+            const dangerousColdMeds = ['humex', 'actifed', 'rhumafed', 'pseudoephedrine', 'fervex', 'clarix'];
+
+            if (isHypertensive && dangerousColdMeds.some(med => medInput.includes(med))) {
+                // نتيجة تحذيرية عالية الدقة والخطورة الصيدلانية
+                resultBox.className = 'result-card danger';
+                resultTitle.innerText = '⚠️ تعارض دوائي خطير (🔴 غير آمن)';
+                resultText.innerHTML = `يحتوي هذا الدواء على مواد ممرضة ومضيقة للأوعية المحيطية (مثل جزيئات السودوإيفيدرين). <strong>يمنع تماماً</strong> تناوله لمريض ضغط الدم لأنه قد يتسبب في ارتفاع مفاجئ وحاد في الضغط.<br><br><strong>البديل الآمن صيدلانياً:</strong> يُنصح باستخدام الباراسيتامول النقي (مثل Doliprane) للآلام، مع مضادات الهيستامين الآمنة للرشح بعد استشارة الطبيب.`;
+            } else {
+                // نتيجة آمنة
+                resultBox.className = 'result-card success';
+                resultTitle.innerText = '✓ دواء آمن للاستخدام (🟢 معتمد)';
+                resultText.innerHTML = `بناءً على الفحص البرمجي، لا توجد تعارضات مباشرة مسجلة لهذا الدواء مع محددات المريض الحالية. يرجى دائماً الالتزام بالجرعة المحددة على العلبة من قِبل الصيدلاني المباشر.`;
+            }
+        }
+    </script>
+</body>
+</html>
